@@ -1,0 +1,51 @@
+{
+ "run": "2026-11-05T14:02:13.116Z",
+ "res": [
+  {
+   "k": "youtube transcript",
+   "count": 0,
+   "man": {
+    "need": 0,
+    "money": 0,
+    "verdict": "No signal"
+   },
+   "sample": []
+  },
+  {
+   "k": "invoice",
+   "count": 2,
+   "man": {
+    "need": 2,
+    "money": 4,
+    "verdict": "Weak signal"
+   },
+   "sample": [
+    "https://news.ycombinator.com/item?id=50273282 . I f I were to buy things I did in last 12 or so years based on current rules, I'd pay li",
+    "https://news.ycombinator.com/item?id=48156406 get B for 10k and we trade widgets, there is no taxable event. If company A was willing to"
+   ]
+  },
+  {
+   "k": "cold email",
+   "count": 0,
+   "man": {
+    "need": 0,
+    "money": 0,
+    "verdict": "No signal"
+   },
+   "sample": []
+  },
+  {
+   "k": "password manager",
+   "count": 4,
+   "man": {
+    "need": 4,
+    "money": 0,
+    "verdict": "Weak signal"
+   },
+   "sample": [
+    "https://news.ycombinator.com/item?id=50290169  and now wants to become one of the Big Tech companies they were built to be an alternativ",
+    "https://news.ycombinator.com/item?id=49989600  on Apple ecosystem. A few questions: 1. \"Don't use safari\" Why? 2. Is there an alternativ"
+   ]
+  }
+ ]
+}
