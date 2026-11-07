@@ -1,16 +1,108 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Buyer Signal Finder: free tool to find people asking for your product</title>
-<meta name="description" content="Free MAN-filter demand check: type what you sell, get real Hacker News posts from people asking for it, plus live Reddit and X searches.">
-<style>body{font:16px system-ui;max-width:820px;margin:auto;padding:20px;background:#0d1117;color:#e6edf3}input,button{font-size:16px;padding:10px;border-radius:8px;border:1px solid #30363d}input{width:60%;background:#161b22;color:#e6edf3}button{background:#2ea043;color:#fff;cursor:pointer}a{color:#58a6ff}.p{border:1px solid #30363d;border-radius:8px;padding:10px;margin:8px 0}.m{color:#8b949e;font-size:13px}.cta{background:#161b22;border:1px solid #2ea043;padding:14px;border-radius:8px;margin-top:20px}</style></head><body>
-<h1>Buyer Signal Finder</h1><p>Type what you sell. It pulls real posts where people ask for it (Hacker News, last 6 months) and scores demand with the MAN filter: Money, Authority, Need.</p>
-<form id="f"><input id="k" placeholder="e.g. crm, invoice tool, youtube transcript" required> <button>Find buyers</button></form>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Buyer Signal Finder: public posts that sound like buyer intent</title>
+<meta name="description" content="Free browser tool. Search public Hacker News posts, and optionally Reddit, for buyer-intent language. A match is a signal, not a guaranteed buyer.">
+<style>
+body{font:16px system-ui;max-width:820px;margin:auto;padding:20px;background:#0d1117;color:#e6edf3}
+input,button{font-size:16px;padding:10px;border-radius:8px;border:1px solid #30363d}
+input[type="text"]{width:min(100%,28rem);background:#161b22;color:#e6edf3}
+button{background:#2ea043;color:#fff;cursor:pointer}
+label{display:inline-flex;gap:8px;align-items:center;margin:8px 0}
+a{color:#58a6ff}
+.p,.history li{border:1px solid #30363d;border-radius:8px;padding:10px;margin:8px 0;list-style:none}
+.history ul,.history{padding:0}
+.m{color:#8b949e;font-size:13px}
+.reason{margin:8px 0 0}
+.note{background:#161b22;border:1px solid #30363d;padding:12px;border-radius:8px}
+.cta{background:#161b22;border:1px solid #2ea043;padding:14px;border-radius:8px;margin-top:20px}
+button.linkish{background:#21262d;color:#e6edf3}
+</style>
+</head>
+<body>
+<h1>Buyer Signal Finder</h1>
+<p>Type what you sell. This page searches public posts for buyer-intent language (someone asking for a tool, an alternative, or saying they would pay). <strong>A match is a signal, not a guaranteed buyer.</strong></p>
+<div class="note">
+<p>Hacker News comes from the public Algolia API and covers about the last 6 months. Reddit is optional and uses public <code>reddit.com/search.json</code>. If the browser blocks that request, Reddit shows <strong>source unavailable</strong> and Hacker News still runs. An unavailable source is not the same as zero matches.</p>
+</div>
+<form id="f">
+<p><input id="k" type="text" placeholder="e.g. crm, invoice tool, youtube transcript" required maxlength="80"></p>
+<p><label><input id="reddit" type="checkbox" checked> Also search Reddit</label></p>
+<p><button>Find signals</button></p>
+</form>
+<div id="history"></div>
 <div id="o"></div>
-<div class="cta"><b>Want 30 hand-checked buyers from X and Reddit, with a reply drafted for each?</b> Done for you in 24h, $49 via PayPal. <a href="https://nidhi-bhai.github.io/buyer-hunt/">Order Buyer Hunt →</a></div>
-<p class="m">Free, no signup. Source: <a href="https://github.com/Nidhi-bhai/buyer-signal-finder">GitHub</a>.</p>
-<script src="core.js"></script><script>
-const e=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-f.onsubmit=async ev=>{ev.preventDefault();o.innerHTML='Searching…';const r=await hunt(k.value.trim());const m=man(r.posts);
-o.innerHTML=`<h2>${r.count} buyer-intent posts · ${m.verdict}</h2><p class="m">Need ${m.need}/10 · Money signals ${m.money}/10</p>`+
-r.posts.map(p=>`<div class="p"><a href="${p.url}" target="_blank" rel="noopener">${p.date} · ${e(p.author)}</a><div>${e(p.snippet)}</div></div>`).join('')+
-'<h3>Live searches (open in new tab)</h3>'+r.links.map(l=>`<div>"${e(l.phrase)}": <a href="${l.reddit}" target="_blank">Reddit</a> · <a href="${l.x}" target="_blank">X</a></div>`).join('');};
-</script></body></html>
+<div class="cta">
+<p><strong>Want these posts checked by hand, with a reply drafted for each?</strong> Buyer Hunt is a done-for-you pass, $49 via PayPal. The free results on this page are still only signals, not guaranteed buyers. <a href="https://nidhi-bhai.github.io/buyer-hunt/">Order Buyer Hunt</a></p>
+</div>
+<p class="m">Free, no signup, no backend. Saved phrases stay in this browser (localStorage) and are not uploaded. Source: <a href="https://github.com/Nidhi-bhai/buyer-signal-finder">GitHub</a>.</p>
+<script src="core.js"></script>
+<script>
+const input = document.getElementById('k');
+const form = document.getElementById('f');
+const output = document.getElementById('o');
+const historyEl = document.getElementById('history');
+const redditBox = document.getElementById('reddit');
+
+function storageOrNull() {
+  try {
+    const probe = '__bsf__';
+    localStorage.setItem(probe, '1');
+    localStorage.removeItem(probe);
+    return localStorage;
+  } catch (e) {
+    return null;
+  }
+}
+
+function paintHistory() {
+  const storage = storageOrNull();
+  const entries = storage ? loadHistory(storage) : [];
+  historyEl.innerHTML = entries.length
+    ? renderHistory(entries)
+    : '<p class="m">No saved search phrases yet. Phrases you search are kept in this browser only.</p>';
+}
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const keyword = input.value.trim();
+  if (!keyword) return;
+  output.innerHTML = '<p>Searching public posts…</p>';
+  const includeReddit = redditBox.checked;
+  let result;
+  try {
+    result = await hunt(keyword, { includeReddit });
+  } catch (e) {
+    result = {
+      keyword,
+      phrases: [],
+      posts: [],
+      sources: {
+        hn: { status: 'unavailable', error: 'request failed' },
+        reddit: includeReddit
+          ? { status: 'unavailable', error: 'request failed' }
+          : { status: 'skipped' }
+      }
+    };
+  }
+  const storage = storageOrNull();
+  if (storage) {
+    try { rememberSearch(storage, keyword, result.phrases || []); } catch (e) {}
+  }
+  output.innerHTML = renderResults(result);
+  paintHistory();
+});
+
+historyEl.addEventListener('click', (event) => {
+  const button = event.target.closest('button[data-phrase]');
+  if (!button) return;
+  input.value = button.getAttribute('data-phrase') || '';
+  form.requestSubmit();
+});
+
+paintHistory();
+</script>
+</body>
+</html>
