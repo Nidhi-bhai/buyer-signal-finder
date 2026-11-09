@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Buyer Signal Finder: public posts that sound like buyer intent</title>
-<meta name="description" content="Free browser tool. Search public Hacker News posts, and optionally Reddit, for buyer-intent language. A match is a signal, not a guaranteed buyer.">
+<title>Buyer Signal Finder: find people already asking for what you sell (free)</title>
+<meta name="description" content="Stop pitching strangers. Free browser tool that finds public Hacker News posts where people ask for a tool, an alternative, or say they would pay.">
 <style>
 body{font:16px system-ui;max-width:820px;margin:auto;padding:20px;background:#0d1117;color:#e6edf3}
 input,button{font-size:16px;padding:10px;border-radius:8px;border:1px solid #30363d}
@@ -22,8 +22,9 @@ button.linkish{background:#21262d;color:#e6edf3}
 </style>
 </head>
 <body>
-<h1>Buyer Signal Finder</h1>
-<p>Type what you sell. This page searches public posts for buyer-intent language (someone asking for a tool, an alternative, or saying they would pay). <strong>A match is a signal, not a guaranteed buyer.</strong></p>
+<h1>Stop pitching strangers. Find people already asking.</h1>
+<p>Type what you sell. This page searches public posts for buyer words: <i>"is there a tool"</i>, <i>"alternative to"</i>, <i>"I'd pay for"</i>. Free, no signup, runs in your browser.</p>
+<p class="m">Honest limit: a match means someone used buyer words. It does not mean they will buy.</p>
 <div class="note">
 <p>Hacker News comes from the public Algolia API and covers about the last 6 months. Reddit is optional and uses public <code>reddit.com/search.json</code>. If the browser blocks that request, Reddit shows <strong>source unavailable</strong> and Hacker News still runs. An unavailable source is not the same as zero matches.</p>
 </div>
@@ -35,7 +36,7 @@ button.linkish{background:#21262d;color:#e6edf3}
 <div id="history"></div>
 <div id="o"></div>
 <div class="cta">
-<p><strong>Want these posts checked by hand, with a reply drafted for each?</strong> Buyer Hunt is a done-for-you pass, $49 via PayPal. The free results on this page are still only signals, not guaranteed buyers. <a href="https://nidhi-bhai.github.io/buyer-hunt/">Order Buyer Hunt</a></p>
+<p><strong>Want X covered too, each post checked for fit, and a reply drafted for every one?</strong> Buyer Hunt: 30 posts from the last 14 days, delivered in 24h, $49 via PayPal. Fewer than 30 found, you get the difference back. <a href="https://nidhi-bhai.github.io/buyer-hunt/">Get Buyer Hunt</a></p>
 </div>
 <p class="m">Free, no signup, no backend. Saved phrases stay in this browser (localStorage) and are not uploaded. Source: <a href="https://github.com/Nidhi-bhai/buyer-signal-finder">GitHub</a>.</p>
 <script src="core.js"></script>
